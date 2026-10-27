@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { BasicPromptDto } from './dtos';
-import { GeminiAdapter } from '../common/adapter/gemini.adapter';
 
+import { GeminiAdapter } from '../common/adapter/gemini.adapter';
 
 /**
  * Handles Gemini service operations: returns a test greeting, generates text
@@ -31,14 +31,17 @@ export class GeminiService {
    * @returns
    */
   async basicPrompt(basicPromptDto: BasicPromptDto) {
-	const { prompt } = basicPromptDto;
-	const result = await this.geminiAdapter.generateText({ prompt });
-
-    return result.output_text;
+    const { prompt } = basicPromptDto;
+    return await this.geminiAdapter.generateText({ prompt });
   }
 
-
-  basicPromptStream(baiscPromptDto: BasicPromptDto) {
-    return 'string';
+  /**
+   * this method is used to genetare stream text
+   * @param basicPromptDto 
+   * @returns 
+   */
+  async basicPromptStream(basicPromptDto: BasicPromptDto) {
+    const { prompt } = basicPromptDto;
+    return await this.geminiAdapter.generateContent({ prompt });
   }
 }

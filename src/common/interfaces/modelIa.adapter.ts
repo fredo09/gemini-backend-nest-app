@@ -1,3 +1,5 @@
+import type { GenerateContentResponse } from '@google/genai';
+
 /**
  * This file defines the modelIaAdapter interface and related request and response interfaces for generating text using a language model.
  * The modelIaAdapter interface specifies the contract that any AI model adapter should adhere to, ensuring consistency in how text generation requests are handled.
@@ -7,12 +9,16 @@
  * 
  * @interface modelIaAdapter
  * @method generateText - Method to generate text based on a given request.
+ * @method generateContent - Method to generate stream text basid on a given requiest.
  */
 
 export interface modelIaAdapter {
 	generateText(
     request: GenerateTextRequest,
   ): Promise<GenerateTextResponse>;
+  generateContent?(
+    request: GenerateTextRequest,
+  ): Promise<AsyncGenerator<GenerateContentResponse>>;
 }
 
 export interface GenerateTextRequest {
