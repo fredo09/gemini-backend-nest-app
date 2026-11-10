@@ -36,12 +36,22 @@ export class GeminiService {
   }
 
   /**
-   * this method is used to genetare stream text
+   * this method is used to generate stream text
    * @param basicPromptDto 
    * @returns 
    */
   async basicPromptStream(basicPromptDto: BasicPromptDto) {
     const { prompt } = basicPromptDto;
     return await this.geminiAdapter.generateContent({ prompt });
+  }
+
+  /**
+   * This is a method that generates a stream of image content based on a given prompt.
+   * @param basicPromptDto 
+   * @returns 
+   */
+  async basicPromptStreamImage(basicPromptDto: BasicPromptDto) {
+    const { prompt} = basicPromptDto;
+    return await this.geminiAdapter.generateContent({ prompt, model: 'gemini-3.5-image-lite' });
   }
 }

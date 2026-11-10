@@ -39,8 +39,9 @@ export class GeminiAdapter implements modelIaAdapter {
   ): Promise<AsyncGenerator<GenerateContentResponse>> {
     console.log("vemos el prompt aqui ", request.prompt);
     const interaction = await this.ia.models.generateContentStream({
-      model: 'gemini-3.6-flash',
-      contents: request.prompt,
+      // model: 'gemini-3.6-flash',
+      model: request?.model || 'gemini-3.6-flash',
+      contents: request?.prompt,
       config : {
         systemInstruction: 'Responde únicamente en español y en formato markdown.'
       }

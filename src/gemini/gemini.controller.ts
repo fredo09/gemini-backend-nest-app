@@ -1,8 +1,18 @@
-import { Controller, Get, Post, Body, Res, HttpStatus } from '@nestjs/common';
-import express from 'express';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Res,
+  HttpStatus,
+  UseInterceptors,
+  UploadedFiles,
+} from '@nestjs/common';
+import * as express from 'express';
 import { GeminiService } from './gemini.service';
 
 import { BasicPromptDto } from './dtos/basic-prompt';
+import { FilesInterceptor } from '@nestjs/platform-express';
 
 /**
  * Exposes the Gemini API endpoints for a test greeting, basic prompt
@@ -28,7 +38,7 @@ export class GeminiController {
 
   /**
    * this endpoint is used to test the basic prompt functionality of the GeminiService.
-   * @returns 
+   * @returns
    */
   @Post('/basic-prompt')
   basicPrompt(@Body() basicPromptDto: BasicPromptDto) {
@@ -37,14 +47,13 @@ export class GeminiController {
 
   /**
    * this endpoint is used to generate stream text
-   * @param basicPromptDto 
-   * @param res 
+   * @param basicPromptDto
+   * @param res
    */
   @Post('/basic-prompt-stream')
   async getBasicPromptStream(
     @Body() basicPromptDto: BasicPromptDto,
     @Res() res: express.Response,
-    //Todo: files
   ) {
     const stream = (await this.geminiService.basicPromptStream(
       basicPromptDto,
@@ -55,9 +64,44 @@ export class GeminiController {
     res.status(HttpStatus.OK);
 
     //* aqui recorremos el stream
-    for await(const chuck of stream) {
+    for await (const chuck of stream) {
       const pieace = chuck.text;
-      console.log("🚀 ~ GeminiController ~ getBasicPromptStream ~ pieace:", pieace);
+      console.log(
+        '🚀 ~ GeminiController ~ getBasicPromptStream ~ pieace:',
+        pieace,
+      );
+
+      res.write(pieace);
+    }
+
+    res.end();
+  }
+
+  @Post('/basic-prompt-stream-image')
+  @UseInterceptors(FilesInterceptor('files'))
+  async getBasicPromptStreamFile(
+    @Body() basicPromptDto: BasicPromptDto,
+    @Res() res: express.Response,
+    //Todo: files
+    @UploadedFiles() files: Array<any>
+  ) {
+    console.log('🚀 ~ GeminiController ~ getBasicPromptStream ~ files:', files);
+
+    const stream = (await this.geminiService.basicPromptStreamImage(
+      basicPromptDto,
+    )) as unknown as AsyncIterable<{ text: string }>;
+
+    //res.setHeader('Content-type', 'application/json');
+    res.setHeader('Content-type', 'text/plain');
+    res.status(HttpStatus.OK);
+
+    //* aqui recorremos el stream
+    for await (const chuck of stream) {
+      const pieace = chuck.text;
+      console.log(
+        '🚀 ~ GeminiController ~ getBasicPromptStream ~ pieace:',
+        pieace,
+      );
 
       res.write(pieace);
     }
